@@ -1,4 +1,5 @@
-name: CI workflow
+name: CI Workflow
+
 on:
   push:
     branches:
@@ -6,22 +7,56 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
     container:
       image: python:3.9-slim
+
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v3
-      - name: Install dependencies
+
+      - name: Install Dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Lint with flake8
+        # Add error handling here if required
+
+      - name: Lint with Flake8
         run: |
-          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 src --count --max-complexity=10 --max-line-length=127 --statistics
-      - name: Run unit tests with nose
+          flake8 src --count --select=E9,F63,F7,F82 \
+            --show-source --statistics
+          flake8 src --count --max-complexity=10 --max-line-length=127 \
+            --statistics
+        # Add error handling here if required
+
+      - name: Run Unit Tests with Nose
         run: |
           nosetests --with-coverage
+        # Add error handling here if required
+
+      # Additional Automation Steps:
+      
+      - name: Static Analysis with Bandit
+        run: |
+          bandit -r src
+        # Add error handling here if required
+
+      - name: Security Audit with Safety
+        run: |
+          safety check
+        # Add error handling here if required
+
+      - name: Build Docker Image
+        run: |
+          docker build -t myapp:latest .
+        # Add error handling here if required
+
+      - name: Push Docker Image to Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker push myapp:latest
+        # Add error handling here if required

@@ -21,4 +21,50 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.t
+          pip install -r requirements.txt
+        # Add error handling here if required
+
+      - name: Lint with Flake8
+        run: |
+          flake8 src --count --select=E9,F63,F7,F82 \
+            --show-source --statistics
+          flake8 src --count --max-complexity=10 --max-line-length=127 \
+            --statistics
+        # Add error handling here if required
+
+      - name: Run Unit Tests with Nose
+        run: |
+          nosetests --with-coverage
+        # Add error handling here if required
+
+      - name: Install Bandit
+        run: |
+          pip install bandit
+        # Add error handling here if required
+
+      - name: Static Analysis with Bandit
+        run: |
+          bandit -r src
+        # Add error handling here if required
+
+      - name: Install Safety
+        run: |
+          pip install safety
+        # Add error handling here if required
+
+      - name: Security Audit with Safety
+        run: |
+          safety check
+        # Add error handling here if required
+
+      - name: Build Docker Image
+        run: |
+          docker build -t myapp:latest .
+        # Add error handling here if required
+
+      - name: Push Docker Image to Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          docker push myapp:latest
+        # Add error handling here if required

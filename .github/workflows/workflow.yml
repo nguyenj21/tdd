@@ -57,6 +57,12 @@ jobs:
           safety check
         # Add error handling here if required
 
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker.io
+        # Add error handling here if required
+
       - name: Build Docker Image
         run: |
           docker build -t myapp:latest .

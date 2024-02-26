@@ -37,8 +37,11 @@ jobs:
           nosetests --with-coverage
         # Add error handling here if required
 
-      # Additional Automation Steps:
-      
+      - name: Install Bandit
+        run: |
+          pip install bandit
+        # Add error handling here if required
+
       - name: Static Analysis with Bandit
         run: |
           bandit -r src
